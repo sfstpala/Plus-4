@@ -1,17 +1,16 @@
+
 [Desktop Entry]
 Name=Plus-4
-Comment=Terminal Emulator
-TryExec=/opt/plus-4/plus4
-Exec=/opt/plus-4/plus4
-Icon=utilities-terminal
+Comment=Plus-4 Terminal Emulator
+Exec=/opt/plus-4/plus-4
+Icon=gnome-terminal
 Type=Application
-Categories=GNOME;GTK;Utility;TerminalEmulator;
-OnlyShowIn=GNOME;Unity;
+Categories=GNOME;GTK;Accessories;Utility;TerminalEmulator;
 StartupNotify=true
-X-Ayatana-Desktop-Shortcuts=New
 X-Ubuntu-Gettext-Domain=plus-4
+X-Ayatana-Desktop-Shortcuts=New
 
 [New Shortcut Group]
 Name=New Terminal
-Exec=/opt/plus-4/plus4
+Exec=/opt/plus-4/plus-4
 TargetEnvironment=Unity
