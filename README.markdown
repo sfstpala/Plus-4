@@ -6,9 +6,8 @@ This is a pretty simple terminal emulator.
 
 ## Installation
 
-To simply install the program on Oneiric, [**download the
-package**](https://github.com/downloads/sfstpala/Plus-4/src.deb)
-and double click it.
+To simply install the program on Oneiric, [**download the debian
+package**](https://github.com/downloads/sfstpala/Plus-4/src.deb).
 
 If you want to build and install the package, a script is included to
 build the debian package:

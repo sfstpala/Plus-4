@@ -130,8 +130,7 @@ class Application (object):
         n = self.terminals.index(widget)
         nx = ((n or 1) - 1) % len(self.terminals)
         if len(self.terminals) == 1:
-            self.quit(widget)
-            exit(widget.get_child_exit_status())
+            sys.exit(widget.get_child_exit_status())
         self.builder.get_object("viewport1").remove(
             self.terminals[self.current_terminal])
         self.terminals.remove(self.terminals[self.current_terminal])
