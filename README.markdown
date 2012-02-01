@@ -47,5 +47,6 @@ It looks like this:
         "bg": "#3e32a2",
         "margin": 32,
         "padding": 8,
-        "command": ["/usr/bin/env", "bash"]
+        "command": ["/usr/bin/env", "bash"],
+        "title": "Commodore 64"
     }
