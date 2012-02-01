@@ -1,0 +1,9 @@
+{
+    "font-family": "Ubuntu Mono",
+    "font-size": 15,
+    "fg": "#ccc",
+    "bg": "#111",
+    "margin": 0,
+    "padding": 8,
+    "command": ["/usr/bin/env", "bash"]
+}

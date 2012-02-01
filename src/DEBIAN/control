@@ -1,0 +1,12 @@
+Package: plus-4
+Version: 0.1
+Architecture: all
+Maintainer: Stefano Palazzo <stefano-palazzo@ubuntu.com>
+Installed-Size: 2
+Depends: python3.2,
+         python3-gobject
+Section: extras
+Priority: optional
+Homepage: 
+Description: Hello World
+ Hello World displays Hello World

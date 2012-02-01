@@ -1,0 +1,165 @@
+#!/usr/bin/env python3.2
+
+import sys
+import os
+import json
+
+from gi.repository import Gtk, GObject, GLib, Gdk, Vte
+
+
+class Application (object):
+
+    conf = {
+        "font-family": "Ubuntu Mono",
+        "font-size": 17,
+        "fg": "#7c71da",
+        "bg": "#3e32a2",
+        "margin": 32,
+        "padding": 8,
+        "command": ["/usr/bin/env", "bash"],
+        "title": "Terminal"
+    }
+
+    def __init__(self):
+        self.builder = Gtk.Builder()
+        self.builder.add_from_file(os.path.join(os.path.split(
+            os.path.realpath(__file__))[0], "ui", "plus-4.glade"))
+        self.builder.connect_signals(self)
+        self.title = self.conf["title"]
+        self.builder.get_object("window1").set_title(self.conf["title"])
+        self.terminals = []
+        self.fullscreen = False
+        self.current_terminal = None
+        config_file = os.path.join(os.path.split(
+            os.path.realpath(__file__))[0], "settings.json")
+        print(config_file)
+        if os.path.exists(config_file):
+            try:
+                self.conf.update(json.load(open(config_file)))
+            except Exception as e:
+                print("couldn't parse config file", file=sys.stderr)
+                print(str(e), file=sys.stderr)
+                sys.exit(1)
+        self.add_terminal()
+        self.conf["default"] = self.conf.copy()
+        self.builder.get_object("window1").show()
+        self.builder.get_object("viewport1").modify_bg(Gtk.StateType.NORMAL,
+            Gdk.color_parse(self.conf["bg"]))
+        self.builder.get_object("window1").modify_bg(Gtk.StateType.NORMAL,
+            Gdk.color_parse(self.conf["fg"]))
+        self.builder.get_object("viewport1").props.margin = self.conf["margin"]
+
+    def add_terminal(self):
+        v = Vte.Terminal()
+        v.connect("key-press-event", self.on_key_press)
+        v.show()
+        self.terminals.append(v)
+        if self.current_terminal is not None:
+            self.builder.get_object("viewport1").remove(
+                self.terminals[self.current_terminal])
+        self.current_terminal = len(self.terminals) - 1
+        self.builder.get_object("viewport1").add(v)
+        self.modify_title()
+        v.connect("child-exited", self.on_child_exited)
+        v.grab_focus()
+        GObject.idle_add(self.apply_style, v)
+        self.fork(v)
+
+    def apply_style(self, v):
+        v.set_color_background(Gdk.color_parse(self.conf["bg"]))
+        v.set_color_foreground(Gdk.color_parse(self.conf["fg"]))
+        v.props.margin = self.conf["padding"]
+        v.set_font_from_string("{} {:d}".format(self.conf["font-family"],
+            self.conf["font-size"]))
+
+    def on_key_press(self, widget, e):
+        mask = bin(e.state)[2:].rjust(12, "0")
+        *_, alt, ctrl, _, shift = (i == "1" for i in mask)
+        key = e.get_keycode()[1]
+        if key == 113 and not shift and not ctrl and alt:
+            self.builder.get_object("viewport1").remove(
+                self.terminals[self.current_terminal])
+            c = (self.current_terminal - 1) % len(self.terminals)
+            self.current_terminal = c
+            self.builder.get_object("viewport1").add(
+                self.terminals[self.current_terminal])
+            self.terminals[self.current_terminal].grab_focus()
+            self.modify_title()
+        elif key == 114 and not shift and not ctrl and alt:
+            self.builder.get_object("viewport1").remove(
+                self.terminals[self.current_terminal])
+            c = (self.current_terminal + 1) % len(self.terminals)
+            self.current_terminal = c
+            self.builder.get_object("viewport1").add(
+                self.terminals[self.current_terminal])
+            self.terminals[self.current_terminal].grab_focus()
+            self.modify_title()
+        elif key == 28 and not shift and not alt and ctrl:
+            self.add_terminal()
+        elif key == 25 and not shift and not alt and ctrl:
+            self.on_child_exited(self.terminals[self.current_terminal])
+        elif key == 54 and shift and not alt and ctrl:
+            widget.copy_clipboard()
+        elif key == 55 and shift and not alt and ctrl:
+            widget.paste_clipboard()
+        elif key == 35 and not shift and not alt and ctrl:
+            if self.conf["font-size"] <= 288:
+                self.conf["font-size"] += 2
+            for v in self.terminals:
+                self.apply_style(v)
+        elif key == 61 and not shift and not alt and ctrl:
+            if self.conf["font-size"] > 2:
+                self.conf["font-size"] -= 2
+            for v in self.terminals:
+                self.apply_style(v)
+        elif key == 19 and not shift and not alt and ctrl:
+            self.conf["font-size"] = self.conf["default"]["font-size"]
+            for v in self.terminals:
+                self.apply_style(v)
+        elif key == 95 and not shift and not alt and not ctrl:
+            if not self.fullscreen:
+                self.builder.get_object("window1").fullscreen()
+            else:
+                self.builder.get_object("window1").unfullscreen()
+        else:
+            return False
+        return True
+
+    def on_child_exited(self, widget):
+        n = self.terminals.index(widget)
+        nx = ((n or 1) - 1) % len(self.terminals)
+        if len(self.terminals) == 1:
+            self.quit(widget)
+            exit(widget.get_child_exit_status())
+        self.builder.get_object("viewport1").remove(
+            self.terminals[self.current_terminal])
+        self.terminals.remove(self.terminals[self.current_terminal])
+        self.current_terminal = nx
+        self.builder.get_object("viewport1").add(
+            self.terminals[self.current_terminal])
+        self.modify_title()
+        self.terminals[self.current_terminal].grab_focus()
+
+    def on_window_state(self, widget, e):
+        self.fullscreen = bool(e.new_window_state << 4)
+
+    def fork(self, widget):
+        widget.reset(True, True)
+        widget.fork_command_full(Vte.PtyFlags.DEFAULT, None,
+            ["/usr/bin/env", "bash"], None, GLib.SpawnFlags.SEARCH_PATH,
+            None, None)
+
+    def modify_title(self):
+        self.builder.get_object("window1").set_title((
+            "{} ({}/{})".format(self.title, (self.current_terminal + 1),
+            len(self.terminals))) if len(self.terminals) != 1 else self.title)
+
+    def run(self):
+        Gtk.main()
+
+    def quit(self, widget):
+        Gtk.main_quit()
+
+
+if __name__ == '__main__':
+    Application().run()
