@@ -7,6 +7,6 @@ Depends: python3.2,
          python3-gobject
 Section: extras
 Priority: optional
-Homepage: 
-Description: Hello World
- Hello World displays Hello World
+Homepage: https://github.com/sfstpala/Plus-4
+Description: Plus-4
+ This is a pretty simple terminal emulator.

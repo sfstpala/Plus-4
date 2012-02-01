@@ -23,6 +23,8 @@ build the debian package:
  - **Ctrl**+**Right**: next terminal
  - **Ctrl**+**Left**: previous terminal
 
+ - **F11**: Fullscreen
+
  - **Ctrl**+**Shift**+**C**: Copy
  - **Ctrl**+**Shift**+**V**: Paste
 
