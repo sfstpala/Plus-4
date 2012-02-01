@@ -15,6 +15,9 @@ build the debian package:
     ./build
     sudo dpkg -i src.deb
 
+If you're not running Ubuntu, you can just put move `src/opt/plus-4/`
+to `/opt/plus-4/` and `src/usr/share/applications/plus-4.desktop` to
+`/usr/share/applications/`.
 
 ## Keyboard Shortcuts
 
