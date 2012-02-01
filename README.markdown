@@ -50,3 +50,10 @@ It looks like this:
         "command": ["/usr/bin/env", "bash"],
         "title": "Commodore 64"
     }
+
+## Hackers
+
+If you want to mess with the code, you'll want to check out [VTE's new
+documentation](http://developer.gnome.org/vte/unstable/VteTerminal.html).
+
+Notice that it's written (and depends on) Python 3.
