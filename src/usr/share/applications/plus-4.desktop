@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Plus-4
+Comment=Plus-4 Terminal Emulator
+Exec=/opt/plus-4/plus-4
+Icon=gnome-terminal
+Type=Application
+Categories=GNOME;GTK;Accessories;Utility;TerminalEmulator;
+StartupNotify=true
+X-Ubuntu-Gettext-Domain=plus-4
