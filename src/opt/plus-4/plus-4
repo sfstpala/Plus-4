@@ -52,6 +52,7 @@ class Application (object):
     def add_terminal(self):
         v = Vte.Terminal()
         v.connect("key-press-event", self.on_key_press)
+        v.set_scrollback_lines(-1)
         v.set_mouse_autohide(True)
         v.show()
         self.terminals.append(v)
