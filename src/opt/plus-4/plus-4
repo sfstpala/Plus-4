@@ -32,7 +32,6 @@ class Application (object):
         self.current_terminal = None
         config_file = os.path.join(os.path.split(
             os.path.realpath(__file__))[0], "settings.json")
-        print(config_file)
         if os.path.exists(config_file):
             try:
                 self.conf.update(json.load(open(config_file)))
@@ -121,8 +120,10 @@ class Application (object):
         elif key == 95 and not shift and not alt and not ctrl:
             if not self.fullscreen:
                 self.builder.get_object("window1").fullscreen()
+                self.fullscreen = True	
             else:
                 self.builder.get_object("window1").unfullscreen()
+                self.fullscreen = False
         else:
             return False
         return True
@@ -140,9 +141,6 @@ class Application (object):
             self.terminals[self.current_terminal])
         self.modify_title()
         self.terminals[self.current_terminal].grab_focus()
-
-    def on_window_state(self, widget, e):
-        self.fullscreen = bool(e.new_window_state << 4)
 
     def fork(self, widget):
         widget.reset(True, True)
