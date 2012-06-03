@@ -43,7 +43,7 @@ class Application (object):
         self.conf["default"] = self.conf.copy()
         self.builder.get_object("window1").show()
         self.builder.get_object("viewport1").modify_bg(Gtk.StateType.NORMAL,
-            Gdk.color_parse(self.conf["bg"]))
+            Gdk.color_parse(self.conf.get("mg") or self.conf["bg"]))
         self.builder.get_object("window1").modify_bg(Gtk.StateType.NORMAL,
             Gdk.color_parse(self.conf["fg"]))
         self.builder.get_object("viewport1").props.margin = self.conf["margin"]
@@ -67,8 +67,38 @@ class Application (object):
         self.fork(v)
 
     def apply_style(self, v):
-        v.set_color_background(Gdk.color_parse(self.conf["bg"]))
-        v.set_color_foreground(Gdk.color_parse(self.conf["fg"]))
+        try:
+            v.set_color_background(Gdk.color_parse(self.conf["bg"]))
+            v.set_color_foreground(Gdk.color_parse(self.conf["fg"]))
+        except Exception as e:
+            v.set_color_background(Gdk.color_parse("#111"))
+            v.set_color_foreground(Gdk.color_parse("#ccc"))
+            print(e)
+        try:
+            v.set_colors(
+                Gdk.color_parse(self.conf["fg"]),
+                Gdk.color_parse(self.conf["bg"]),
+                [
+                    Gdk.color_parse(self.conf["colors"]["black"]),
+                    Gdk.color_parse(self.conf["colors"]["red"]),
+                    Gdk.color_parse(self.conf["colors"]["green"]),
+                    Gdk.color_parse(self.conf["colors"]["yellow"]),
+                    Gdk.color_parse(self.conf["colors"]["blue"]),
+                    Gdk.color_parse(self.conf["colors"]["magenta"]),
+                    Gdk.color_parse(self.conf["colors"]["cyan"]),
+                    Gdk.color_parse(self.conf["colors"]["white"]),
+                    Gdk.color_parse(self.conf["colors"]["brblack"]),
+                    Gdk.color_parse(self.conf["colors"]["brred"]),
+                    Gdk.color_parse(self.conf["colors"]["brgreen"]),
+                    Gdk.color_parse(self.conf["colors"]["bryellow"]),
+                    Gdk.color_parse(self.conf["colors"]["brblue"]),
+                    Gdk.color_parse(self.conf["colors"]["brmagenta"]),
+                    Gdk.color_parse(self.conf["colors"]["brcyan"]),
+                    Gdk.color_parse(self.conf["colors"]["brwhite"]),
+                ],
+            )
+        except Exception as e:
+            print(e)
         v.props.margin = self.conf["padding"]
         v.set_font_from_string("{} {:d}".format(self.conf["font-family"],
             self.conf["font-size"]))
